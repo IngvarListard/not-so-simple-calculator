@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func newDB(sqlitePath string) (*sql.DB, error) {
+func NewDB(sqlitePath string) (*sql.DB, error) {
 	var isEmpty bool
 	if _, err := os.Stat(sqlitePath); os.IsNotExist(err) {
 		isEmpty = true

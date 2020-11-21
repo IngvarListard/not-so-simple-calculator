@@ -2,7 +2,7 @@ package sqlstore
 
 import (
 	"database/sql"
-	"github.com/IngvarListard/not-so-simple-calculator/internal/store"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/store"
 )
 
 func New(db *sql.DB) *Store {

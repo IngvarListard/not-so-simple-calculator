@@ -1,5 +1,5 @@
 package store
 
-type Store interface {
+type Interface interface {
 	History() HistoryRepository
 }

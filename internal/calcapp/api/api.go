@@ -2,13 +2,14 @@ package api
 
 import (
 	"fmt"
-	apperr "github.com/IngvarListard/not-so-simple-calculator/internal/server/errors"
+	apperr "github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/errors"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/server"
 	"github.com/IngvarListard/not-so-simple-calculator/pkg/calc"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func SolveExpression() gin.HandlerFunc {
+func SolveExpression(s server.Interface) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		jsonBody := struct {
 			Expression string `json:"expression" form:"expression" binding:"required"`

@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/IngvarListard/not-so-simple-calculator/internal/server"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/server/calcserv"
 	"github.com/caarlos0/env/v6"
 	"log"
 )
@@ -12,7 +13,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	srv, err := server.NewServer(cfg)
+	srv, err := calcserv.NewServer(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

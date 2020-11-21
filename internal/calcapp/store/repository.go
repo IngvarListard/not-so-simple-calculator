@@ -1,7 +1,7 @@
 package store
 
 import (
-	"github.com/IngvarListard/not-so-simple-calculator/internal/models"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/models"
 	"time"
 )
 

@@ -1,19 +1,20 @@
-package server
+package calcserv
 
 import (
 	"fmt"
-	"github.com/IngvarListard/not-so-simple-calculator/internal/server/api"
-	"github.com/IngvarListard/not-so-simple-calculator/internal/server/errors"
-	"github.com/IngvarListard/not-so-simple-calculator/internal/store"
-	"github.com/IngvarListard/not-so-simple-calculator/internal/store/sqlstore"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/api"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/errors"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/store"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/store/sqlstore"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
 
-func NewServer(config *Config) (*Server, error) {
-	db, err := newDB(config.DBPath)
+func NewServer(config *server.Config) (*Server, error) {
+	db, err := server.NewDB(config.DBPath)
 	if err != nil {
 		return nil, fmt.Errorf("can't establish database connection: %w", err)
 	}
@@ -27,12 +28,16 @@ func NewServer(config *Config) (*Server, error) {
 
 type Server struct {
 	*gin.Engine
-	store store.Store
+	store store.Interface
+}
+
+func (s *Server) Store() store.Interface {
+	return s.store
 }
 
 func (s *Server) registerCoreAPI() {
 	apiGroup := s.Group("/api")
-	apiGroup.POST("solve_expression", api.SolveExpression())
+	apiGroup.POST("solve_expression", api.SolveExpression(s))
 }
 
 func ErrorHandler() gin.HandlerFunc {

@@ -212,7 +212,6 @@ func (s *Solver) isBinOp() bool {
 }
 
 func (s *Solver) Factor() (*genericConst, error) {
-
 	switch s.currentLexeme.Token() {
 	case Lparen:
 		err := s.consume(Lparen)
@@ -247,7 +246,6 @@ func (s *Solver) Factor() (*genericConst, error) {
 	default:
 		return nil, fmt.Errorf("unexpected token %v", s.currentLexeme.Token())
 	}
-
 }
 
 func (s *Solver) Solve() (interface{}, error) {
