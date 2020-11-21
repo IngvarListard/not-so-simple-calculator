@@ -1,6 +1,6 @@
 #+TITLE: Сервис простого калькулятора с REST API
 
-* О сервисе
+** О сервисе
 Простой калькулятор, умеющий решать выражения любой сложности с четырьма базовыми операциями:
 - сложение
 - вычитание
@@ -27,12 +27,50 @@ API построен на основе библиотеки ~Gin~. В качес
   - [ ] калькулятора
   - [ ] методов АПИ
   - [ ] записи в БД
-* Быстрый старт
+** Быстрый старт
 Проверено на машинах под управлением Linux x64
 
 1. Создать директорию на хосте ~~/db~, либо в файле [[https://github.com/IngvarListard/not-so-simple-calculator/blob/master/deploy/docker-compose.yml#L13][docker-compose.yml]] изменить строку ~source: ~/db~ на желаемую;
 2. Запустить ~docker-compose -f deploy/docker-compose.yml up --build~
 
-В директории ~~/db~ будет храниться база данных ~SQLite~ в которую будет записываться история вызова операций
+В директории ~~/db~ будет храниться база данных ~SQLite~ в которую будет записываться история операций
 
 [[http://example.com/][Документация к методам API]]
+** Структура проекта
+#+begin_src
+├── cmd
+│   └── calculator
+│       └── main.go                     - main для калькулятора
+├── deploy
+│   ├── docker-compose.yml
+│   └── Dockerfile
+├── internal
+│   └── calcapp
+│       ├── api                         - методы API
+│       │   └── api.go
+│       ├── config.go
+│       ├── database.go
+│       ├── errors                      - кастомная модель ошибок в приложении
+│       │   └── errors.go
+│       ├── models                      - модели БД
+│       │   └── history.go
+│       ├── server
+│       │   ├── calcserv                - имплементация сервера
+│       │   │   └── server.go
+│       │   └── iserver.go
+│       └── store                       - репозиторий для общения с БД
+│           ├── sqlstore                - имплементация репозитория
+│           │   ├── historyrep.go
+│           │   └── store.go
+│           ├── repository.go
+│           └── store.go
+├── pkg
+│   └── calc                            - парсер, калькулятор выражений
+│       ├── calc.go
+│       ├── calc_test.go
+│       └── generic.go
+├── go.mod
+├── go.sum
+├── README.org
+└── todos.org
+#+end_src
