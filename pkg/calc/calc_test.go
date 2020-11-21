@@ -2,7 +2,7 @@ package calc
 
 import "testing"
 
-func TestInterpreter_Expr(t *testing.T) {
+func TestSolver_Expr(t *testing.T) {
 	type fields struct {
 		parser        *Parser
 		currentLexeme Lexeme
@@ -130,10 +130,75 @@ func TestInterpreter_Expr(t *testing.T) {
 			want:    float64(22),
 			wantErr: false,
 		},
+		{
+			name: "parsing_error_1",
+			fields: fields{
+				parser: &Parser{
+					text:        []rune("2 5"),
+					pos:         0,
+					currentRune: '2',
+				},
+				currentLexeme: nil,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "simple_float_sum",
+			fields: fields{
+				parser: &Parser{
+					text:        []rune("2.2 + 5"),
+					pos:         0,
+					currentRune: '2',
+				},
+				currentLexeme: nil,
+			},
+			want:    7.2,
+			wantErr: false,
+		},
+		{
+			name: "simple_float_mul",
+			fields: fields{
+				parser: &Parser{
+					text:        []rune("2.2 * 2"),
+					pos:         0,
+					currentRune: '2',
+				},
+				currentLexeme: nil,
+			},
+			want:    4.4,
+			wantErr: false,
+		},
+		{
+			name: "simple_float_div",
+			fields: fields{
+				parser: &Parser{
+					text:        []rune("4.4 / 2"),
+					pos:         0,
+					currentRune: '4',
+				},
+				currentLexeme: nil,
+			},
+			want:    2.2,
+			wantErr: false,
+		},
+		{
+			name: "simple_float_sub",
+			fields: fields{
+				parser: &Parser{
+					text:        []rune("4.0 - 2"),
+					pos:         0,
+					currentRune: '4',
+				},
+				currentLexeme: nil,
+			},
+			want:    2.0,
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := &Interpreter{
+			i := &Solver{
 				parser:        tt.fields.parser,
 				currentLexeme: tt.fields.currentLexeme,
 			}
@@ -144,7 +209,7 @@ func TestInterpreter_Expr(t *testing.T) {
 				t.Fatalf("%v", err)
 				return
 			}
-			got, err := i.Term()
+			got, err := i.Solve()
 			if i.parser.currentRune != -1 {
 				t.Errorf("NOT EOF")
 			}
@@ -152,7 +217,7 @@ func TestInterpreter_Expr(t *testing.T) {
 				t.Errorf("Expr() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got.Value() != tt.want {
+			if got != tt.want {
 				t.Errorf("Expr() got = %v, want %v", got, tt.want)
 			}
 		})

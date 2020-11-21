@@ -33,6 +33,13 @@ const (
 	Null rune = -1
 )
 
+var binOps = map[Token]struct{}{
+	Plus:  {},
+	Minus: {},
+	Div:   {},
+	Mul:   {},
+}
+
 type Parser struct {
 	text        []rune
 	pos         int
@@ -72,14 +79,18 @@ func (p *Parser) readNumber() (Lexeme, error) {
 	}
 
 	number, _ := strconv.Atoi(numBuf.String())
-	p.skipWhitespace()
 	return &Const{token: Int, value: int64(number)}, nil
 }
 
 func (p *Parser) getNextLexeme() (Lexeme, error) {
 	switch r := p.currentRune; {
 	case unicode.IsDigit(r):
-		return p.readNumber()
+		l, err := p.readNumber()
+		if err != nil {
+			return nil, fmt.Errorf("number parsing error: %w", err)
+		}
+		p.skipWhitespace()
+		return l, nil
 	case r == '(':
 		p.next()
 		p.skipWhitespace()
@@ -119,28 +130,32 @@ func (p *Parser) skipWhitespace() {
 	}
 }
 
-type Interpreter struct {
+type Solver struct {
 	parser        *Parser
 	currentLexeme Lexeme
 }
 
-func (i *Interpreter) Term() (*genericConst, error) {
-	result, err := i.Expr()
+func (s *Solver) Term() (*genericConst, error) {
+	result, err := s.Expr()
 	if err != nil {
 		return nil, err
 	}
-	for i.currentLexeme.Token() == Plus || i.currentLexeme.Token() == Minus {
-		switch i.currentLexeme.Token() {
+	if !s.isBinOp() && s.currentLexeme.Token() != EOF && s.currentLexeme.Token() != Rparen {
+		v, _ := s.currentLexeme.Value()
+		return nil, fmt.Errorf("binary operator or EOF expectd, got %v", v)
+	}
+	for s.currentLexeme.Token() == Plus || s.currentLexeme.Token() == Minus {
+		switch s.currentLexeme.Token() {
 		case Plus:
-			err = i.consume(Plus)
-			right, err := i.Expr()
+			err = s.consume(Plus)
+			right, err := s.Expr()
 			if err != nil {
 				return nil, err
 			}
 			result = result.Add(right)
 		case Minus:
-			err = i.consume(Minus)
-			right, err := i.Expr()
+			err = s.consume(Minus)
+			right, err := s.Expr()
 			if err != nil {
 				return nil, err
 			}
@@ -150,10 +165,10 @@ func (i *Interpreter) Term() (*genericConst, error) {
 	return result, nil
 }
 
-func (i *Interpreter) consume(t Token) error {
+func (s *Solver) consume(t Token) error {
 	var err error
-	if i.currentLexeme.Token() == t {
-		i.currentLexeme, err = i.parser.getNextLexeme()
+	if s.currentLexeme.Token() == t {
+		s.currentLexeme, err = s.parser.getNextLexeme()
 		if err != nil {
 			return err
 		}
@@ -161,23 +176,27 @@ func (i *Interpreter) consume(t Token) error {
 	return nil
 }
 
-func (i *Interpreter) Expr() (*genericConst, error) {
-	result, err := i.Factor()
+func (s *Solver) Expr() (*genericConst, error) {
+	result, err := s.Factor()
 	if err != nil {
 		return nil, err
 	}
-	for i.currentLexeme.Token() == Mul || i.currentLexeme.Token() == Div {
-		switch i.currentLexeme.Token() {
+	if !s.isBinOp() && s.currentLexeme.Token() != EOF && s.currentLexeme.Token() != Rparen {
+		v, _ := s.currentLexeme.Value()
+		return nil, fmt.Errorf("binary operator or EOF expectd, got %v", v)
+	}
+	for s.currentLexeme.Token() == Mul || s.currentLexeme.Token() == Div {
+		switch s.currentLexeme.Token() {
 		case Mul:
-			err = i.consume(Mul)
-			v, err := i.Factor()
+			err = s.consume(Mul)
+			v, err := s.Factor()
 			if err != nil {
 				return nil, err
 			}
 			result = result.Mul(v)
 		case Div:
-			err = i.consume(Div)
-			v, err := i.Factor()
+			err = s.consume(Div)
+			v, err := s.Factor()
 			if err != nil {
 				return nil, err
 			}
@@ -187,35 +206,59 @@ func (i *Interpreter) Expr() (*genericConst, error) {
 	return result, err
 }
 
-func (i *Interpreter) Factor() (*genericConst, error) {
+func (s *Solver) isBinOp() bool {
+	_, ok := binOps[s.currentLexeme.Token()]
+	return ok
+}
 
-	switch i.currentLexeme.Token() {
+func (s *Solver) Factor() (*genericConst, error) {
+
+	switch s.currentLexeme.Token() {
 	case Lparen:
-		err := i.consume(Lparen)
+		err := s.consume(Lparen)
 		if err != nil {
 			return nil, err
 		}
-		r, err := i.Term()
+		r, err := s.Term()
 		if err != nil {
 			return nil, err
 		}
-		err = i.consume(Rparen)
+		err = s.consume(Rparen)
 		if err != nil {
 			return nil, err
 		}
 		return r, nil
 	case Int:
-		v, err := i.currentLexeme.Value()
+		v, err := s.currentLexeme.Value()
 		if err != nil {
 			return nil, err
 		}
 		vv := &genericConst{value: v, typ: gInt}
-		i.currentLexeme, err = i.parser.getNextLexeme()
+		s.currentLexeme, err = s.parser.getNextLexeme()
+		return vv, err
+	case Real:
+		v, err := s.currentLexeme.Value()
+		if err != nil {
+			return nil, err
+		}
+		vv := &genericConst{value: v, typ: gFloat}
+		s.currentLexeme, err = s.parser.getNextLexeme()
 		return vv, err
 	default:
-		return nil, fmt.Errorf("unexpected token %v", i.currentLexeme.Token())
+		return nil, fmt.Errorf("unexpected token %v", s.currentLexeme.Token())
 	}
 
+}
+
+func (s *Solver) Solve() (interface{}, error) {
+	r, err := s.Term()
+	if err != nil {
+		return nil, err
+	}
+	if s.parser.currentRune != -1 {
+		return nil, fmt.Errorf("parsing error: expected EOF got %s", string(s.parser.currentRune))
+	}
+	return r.Value(), nil
 }
 
 type Lexeme interface {
@@ -251,12 +294,12 @@ func NewParser(text string) (*Parser, error) {
 	return parser, nil
 }
 
-func NewInterpreter(parser *Parser) (*Interpreter, error) {
+func NewSolver(parser *Parser) (*Solver, error) {
 	l, err := parser.getNextLexeme()
 	if err != nil {
 		return nil, err
 	}
-	return &Interpreter{
+	return &Solver{
 		parser:        parser,
 		currentLexeme: l,
 	}, nil
