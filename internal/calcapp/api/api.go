@@ -19,7 +19,7 @@ func SolveExpression(s store.Interface) gin.HandlerFunc {
 		}{}
 		err := ctx.BindJSON(&jsonBody)
 		if err != nil {
-			_ = ctx.Error(apperr.New(http.StatusBadRequest, fmt.Sprintf("query validatioin error: %s", err.Error())))
+			_ = ctx.Error(apperr.New(http.StatusBadRequest, fmt.Sprintf("query validation error: %s", err.Error())))
 			return
 		}
 
@@ -62,7 +62,7 @@ func GetHistoryByTimeRange(s store.Interface) gin.HandlerFunc {
 		}{}
 		err := ctx.BindJSON(&b)
 		if err != nil {
-			_ = ctx.Error(apperr.New(http.StatusBadRequest, fmt.Sprintf("query validatioin error: %s", err.Error())))
+			_ = ctx.Error(apperr.New(http.StatusBadRequest, fmt.Sprintf("query validation error: %s", err.Error())))
 			return
 		}
 
