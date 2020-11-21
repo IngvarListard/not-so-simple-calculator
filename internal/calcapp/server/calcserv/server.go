@@ -37,7 +37,11 @@ func (s *Server) Store() store.Interface {
 
 func (s *Server) registerCoreAPI() {
 	apiGroup := s.Group("/api")
-	apiGroup.POST("solve_expression", api.SolveExpression(s))
+	{
+		apiGroup.POST("solve_expression", api.SolveExpression(s.store))
+		apiGroup.GET("get_all_history", api.GetAllHistory(s.store))
+		apiGroup.POST("get_history_by_time_range", api.GetHistoryByTimeRange(s.store))
+	}
 }
 
 func ErrorHandler() gin.HandlerFunc {
@@ -48,27 +52,28 @@ func errorHandler(errType gin.ErrorType) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 		detectedErrors := c.Errors.ByType(errType)
-
-		if len(detectedErrors) > 0 {
-			err := detectedErrors[0].Err
-			var parsedError *errors.AppError
-			switch v := err.(type) {
-			case *errors.AppError:
-				parsedError = v
-			case validator.ValidationErrors:
-				parsedError = &errors.AppError{
-					Code:    http.StatusBadRequest,
-					Message: fmt.Sprintf("query validation error: %v", v.Error()),
-				}
-			default:
-				parsedError = &errors.AppError{
-					Code:    http.StatusInternalServerError,
-					Message: "Internal Server Error",
-				}
-			}
-			c.IndentedJSON(parsedError.Code, gin.H{"error": parsedError})
-			c.Abort()
+		if len(detectedErrors) == 0 {
 			return
 		}
+
+		err := detectedErrors[len(detectedErrors)-1].Err
+		var parsedError *errors.AppError
+		switch v := err.(type) {
+		case *errors.AppError:
+			parsedError = v
+		case validator.ValidationErrors:
+			parsedError = &errors.AppError{
+				Code:    http.StatusBadRequest,
+				Message: fmt.Sprintf("query validation error: %v", v.Error()),
+			}
+		default:
+			parsedError = &errors.AppError{
+				Code:    http.StatusInternalServerError,
+				Message: "Internal Server Error",
+			}
+		}
+		c.IndentedJSON(parsedError.Code, gin.H{"error": parsedError})
+		c.Abort()
+		return
 	}
 }
