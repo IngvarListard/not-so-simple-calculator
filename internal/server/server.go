@@ -2,22 +2,32 @@ package server
 
 import (
 	"fmt"
-	"github.com/IngvarListard/not-so-simple-calculator/pkg/server/api"
-	"github.com/IngvarListard/not-so-simple-calculator/pkg/server/errors"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/server/api"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/server/errors"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/store"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/store/sqlstore"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
 
-func NewServer() Server {
-	s := Server{gin.Default()}
+func NewServer(config *Config) (*Server, error) {
+	db, err := newDB(config.DBPath)
+	if err != nil {
+		return nil, fmt.Errorf("can't establish database connection: %w", err)
+	}
+
+	s := &Server{Engine: gin.Default(), store: sqlstore.New(db)}
 	s.Use(ErrorHandler())
 	s.registerCoreAPI()
-	return s
+
+	return s, nil
 }
 
 type Server struct {
 	*gin.Engine
+	store store.Store
 }
 
 func (s *Server) registerCoreAPI() {
@@ -43,7 +53,7 @@ func errorHandler(errType gin.ErrorType) gin.HandlerFunc {
 			case validator.ValidationErrors:
 				parsedError = &errors.AppError{
 					Code:    http.StatusBadRequest,
-					Message: fmt.Sprintf("query params validation error: %v", v.Error()),
+					Message: fmt.Sprintf("query validation error: %v", v.Error()),
 				}
 			default:
 				parsedError = &errors.AppError{

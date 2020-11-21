@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
+	apperr "github.com/IngvarListard/not-so-simple-calculator/internal/server/errors"
 	"github.com/IngvarListard/not-so-simple-calculator/pkg/calc"
-	apperr "github.com/IngvarListard/not-so-simple-calculator/pkg/server/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
