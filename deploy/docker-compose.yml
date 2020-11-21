@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  calculator:
+    build:
+      context: ../
+      dockerfile: ./deploy/Dockerfile
+    environment:
+      - SQLITE_PATH=/srv/data/database/history.db
+    ports:
+      - "3000:8080"
+    volumes:
+      - type: bind
+        source: "~/db"
+        target: "/srv/data/database"
