@@ -179,6 +179,9 @@ func (s *Solver) Term() (*genericConst, error) {
 		switch s.currentLexeme.Token() {
 		case Plus:
 			err = s.consume(Plus)
+			if err != nil {
+				return nil, err
+			}
 			right, err := s.Expr()
 			if err != nil {
 				return nil, err
@@ -186,6 +189,9 @@ func (s *Solver) Term() (*genericConst, error) {
 			result = result.Add(right)
 		case Minus:
 			err = s.consume(Minus)
+			if err != nil {
+				return nil, err
+			}
 			right, err := s.Expr()
 			if err != nil {
 				return nil, err
@@ -219,14 +225,18 @@ func (s *Solver) Expr() (*genericConst, error) {
 	for s.currentLexeme.Token() == Mul || s.currentLexeme.Token() == Div {
 		switch s.currentLexeme.Token() {
 		case Mul:
-			err = s.consume(Mul)
+			if err = s.consume(Mul); err != nil {
+				return nil, err
+			}
 			v, err := s.Factor()
 			if err != nil {
 				return nil, err
 			}
 			result = result.Mul(v)
 		case Div:
-			err = s.consume(Div)
+			if err = s.consume(Div); err != nil {
+				return nil, err
+			}
 			v, err := s.Factor()
 			if err != nil {
 				return nil, err
