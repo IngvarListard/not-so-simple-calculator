@@ -59,6 +59,7 @@ func (r *HistoryRepository) GetHistoryByTimeRange(startTime string, endTime stri
 
 func (r *HistoryRepository) GetAllHistory() (history []*models.History, err error) {
 	var rows *sql.Rows
+	history = make([]*models.History, 0)
 
 	rows, err = r.store.db.Query("SELECT id, event_time, expression, result FROM history")
 	if err != nil {
