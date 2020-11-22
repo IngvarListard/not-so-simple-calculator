@@ -34,7 +34,15 @@
 
 
 - *CODE*: 500
-- *CONTENT*: Internal Server Error
+- *CONTENT*:
+  #+begin_src json
+    {
+        "error": {
+            "code": 500,
+            "message": "Internal Server Error"
+        }
+    }
+  #+end_src
 *** Пример вызова
 JSON Body
 #+begin_src json
@@ -82,7 +90,15 @@ JSON Body
 
 
 - *CODE*: 500
-- *CONTENT*: Internal Server Error
+- *CONTENT*:
+  #+begin_src json
+    {
+        "error": {
+            "code": 500,
+            "message": "Internal Server Error"
+        }
+    }
+  #+end_src
 *** Пример успешного результата
 
 #+begin_src json
@@ -155,7 +171,15 @@ JSON Body
 
 
 - *CODE*: 500
-- *CONTENT*: Internal Server Error
+- *CONTENT*:
+  #+begin_src json
+    {
+        "error": {
+            "code": 500,
+            "message": "Internal Server Error"
+        }
+    }
+  #+end_src
 *** Пример запроса
 Пример JSON Body POST запроса
 #+begin_src json

@@ -68,6 +68,15 @@ func GetHistoryByTimeRange(s store.Interface) gin.HandlerFunc {
 			return
 		}
 
+		if err = validateDate(b.StartTime); err != nil {
+			_ = ctx.Error(apperr.New(http.StatusBadRequest, fmt.Sprintf("start date validation error: %s", err.Error())))
+			return
+		}
+		if err = validateDate(b.EndTime); err != nil {
+			_ = ctx.Error(apperr.New(http.StatusBadRequest, fmt.Sprintf("end date validation error: %s", err.Error())))
+			return
+		}
+
 		history, err := s.History().GetHistoryByTimeRange(b.StartTime, b.EndTime)
 		if err != nil {
 			_ = ctx.Error(apperr.New(http.StatusBadRequest, fmt.Sprintf("error getting history: %s", err.Error())))
@@ -75,6 +84,11 @@ func GetHistoryByTimeRange(s store.Interface) gin.HandlerFunc {
 		}
 		ctx.JSON(http.StatusOK, history)
 	}
+}
+
+func validateDate(date string) error {
+	_, err := time.Parse(time.RFC3339, date)
+	return err
 }
 
 // GetAllHistory получение всей истории успешных вызовов метода ResolveExpression

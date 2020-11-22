@@ -32,6 +32,7 @@ func (r *HistoryRepository) Create(h *models.History) error {
 
 func (r *HistoryRepository) GetHistoryByTimeRange(startTime string, endTime string) (history []*models.History, err error) {
 	var rows *sql.Rows
+	history = make([]*models.History, 0)
 
 	rows, err = r.store.db.Query("SELECT id, event_time, expression, result FROM history WHERE event_time BETWEEN $1 and $2", startTime, endTime)
 	if err != nil {
