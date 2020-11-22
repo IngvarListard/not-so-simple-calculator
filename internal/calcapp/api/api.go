@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// SolveExpression решение математического выражения
 func SolveExpression(s server.Interface) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		jsonBody := struct {
@@ -54,6 +55,7 @@ func SolveExpression(s server.Interface) gin.HandlerFunc {
 	}
 }
 
+// GetHistoryByTimeRange получение истории вызова математических выражений между заданными датами
 func GetHistoryByTimeRange(s store.Interface) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		b := struct {
@@ -75,6 +77,7 @@ func GetHistoryByTimeRange(s store.Interface) gin.HandlerFunc {
 	}
 }
 
+// GetAllHistory получение всей истории успешных вызовов метода ResolveExpression
 func GetAllHistory(s store.Interface) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		history, err := s.History().GetAllHistory()

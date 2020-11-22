@@ -1,3 +1,8 @@
+/*
+Парсер и калькулятор математических выражений.
+Поддерживаются выражения в скобках и базовые бинарные операторы '+', '-', '/', '*'.
+Поддерживаются операции над целыми и дробными числами.
+*/
 package calc
 
 import (
@@ -6,18 +11,6 @@ import (
 	"strconv"
 	"unicode"
 )
-
-type Token int
-
-func (t Token) Priority() int {
-	switch t {
-	case Plus, Minus:
-		return 3
-	case Mul, Div:
-		return 2
-	}
-	return -1
-}
 
 const (
 	EOF Token = iota
@@ -38,6 +31,44 @@ var binOps = map[Token]struct{}{
 	Minus: {},
 	Div:   {},
 	Mul:   {},
+}
+
+type Token int
+
+func (t Token) Priority() int {
+	switch t {
+	case Plus, Minus:
+		return 3
+	case Mul, Div:
+		return 2
+	}
+	return -1
+}
+
+func NewParser(text string) (*Parser, error) {
+	if len(text) == 0 {
+		return nil, fmt.Errorf("text is empty")
+	}
+
+	runes := []rune(text)
+	parser := &Parser{
+		text:        runes,
+		pos:         0,
+		currentRune: runes[0],
+	}
+	parser.skipWhitespace()
+	return parser, nil
+}
+
+func NewSolver(parser *Parser) (*Solver, error) {
+	l, err := parser.getNextLexeme()
+	if err != nil {
+		return nil, err
+	}
+	return &Solver{
+		parser:        parser,
+		currentLexeme: l,
+	}, nil
 }
 
 type Parser struct {
@@ -275,30 +306,4 @@ func (c *Const) Token() Token {
 
 func (c *Const) Value() (interface{}, error) {
 	return c.value, nil
-}
-
-func NewParser(text string) (*Parser, error) {
-	if len(text) == 0 {
-		return nil, fmt.Errorf("text is empty")
-	}
-
-	runes := []rune(text)
-	parser := &Parser{
-		text:        runes,
-		pos:         0,
-		currentRune: runes[0],
-	}
-	parser.skipWhitespace()
-	return parser, nil
-}
-
-func NewSolver(parser *Parser) (*Solver, error) {
-	l, err := parser.getNextLexeme()
-	if err != nil {
-		return nil, err
-	}
-	return &Solver{
-		parser:        parser,
-		currentLexeme: l,
-	}, nil
 }
