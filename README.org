@@ -88,7 +88,6 @@ API построен на основе библиотеки ~Gin~. В качес
 │   └── Dockerfile
 ├── go.mod
 ├── go.sum
-├── here.db
 ├── internal
 │   └── calcapp
 │       ├── api                         - методы API
@@ -117,8 +116,6 @@ API построен на основе библиотеки ~Gin~. В качес
 │           │   └── testing.go
 │           ├── repository.go
 │           └── store.go
-├── logs
-│   └── all.log
 ├── pkg
 │   └── calc
 │       ├── calc.go
