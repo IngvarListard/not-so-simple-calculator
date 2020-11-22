@@ -12,13 +12,22 @@ type HistoryRepository struct {
 }
 
 func (r *HistoryRepository) Create(h *models.History) error {
-	_, err := r.store.db.Exec(
+	res, err := r.store.db.Exec(
 		"INSERT INTO history (event_time, expression, result) VALUES ($1, $2, $3)",
 		h.EventTime.Format(time.RFC3339),
 		h.Expression,
 		h.Result,
 	)
-	return err
+	if err != nil {
+		return fmt.Errorf("inserting history record error: %w", err)
+	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("getting last insert id error: %w", err)
+	}
+
+	h.ID = id
+	return nil
 }
 
 func (r *HistoryRepository) GetHistoryByTimeRange(startTime string, endTime string) (history []*models.History, err error) {

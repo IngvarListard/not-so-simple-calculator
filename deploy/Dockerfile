@@ -7,6 +7,7 @@ WORKDIR /go/src/calculator/cmd/calculator
 
 RUN apk add build-base
 RUN go mod vendor
+RUN go test /go/src/calculator/...
 RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o calculator
 
 FROM alpine:3

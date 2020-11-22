@@ -9,7 +9,6 @@ import (
 	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/store/sqlstore"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
 

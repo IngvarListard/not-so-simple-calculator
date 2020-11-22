@@ -3,6 +3,7 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
 )
@@ -29,7 +30,7 @@ func NewDB(sqlitePath string) (*sql.DB, error) {
 		return db, nil
 	}
 
-	err = createSchema(db)
+	err = CreateSchema(db)
 	if err != nil {
 		return nil, fmt.Errorf("creating schema error: %w", err)
 	}
@@ -37,7 +38,7 @@ func NewDB(sqlitePath string) (*sql.DB, error) {
 	return db, nil
 }
 
-func createSchema(db *sql.DB) error {
+func CreateSchema(db *sql.DB) error {
 	_, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS history (
 		id INTEGER,
