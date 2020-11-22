@@ -1,24 +1,24 @@
 #+TITLE: Описание API калькулятора
 
-* Решить уравнение
+** Решить уравнение
 Решение математического уравнения
 
-** URL
+*** URL
 ~/api/solve_expression~
 
-** Метод
+*** Метод
 ~POST~
-** Data params
+*** Data params
 Обязательно:
 #+begin_src json
 {
 	"expression": [String]
 }
 #+end_src
-** Успешный ответ
+*** Успешный ответ
 - *CODE*: 200
 - *CONTENT*: ~{"result": [Number]}~
-** Неудачный ответ
+*** Неудачный ответ
 - *CODE*: 400
 - *CONTENT*:
   #+begin_src json
@@ -36,7 +36,7 @@
 
 - *CODE*: 500
 - *CONTENT*: Internal Server Error
-** Пример вызова
+*** Пример вызова
 JSON Body
 #+begin_src json
 {
