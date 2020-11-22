@@ -4,15 +4,15 @@ import (
 	"fmt"
 	apperr "github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/errors"
 	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/models"
+	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/server"
 	"github.com/IngvarListard/not-so-simple-calculator/internal/calcapp/store"
 	"github.com/IngvarListard/not-so-simple-calculator/pkg/calc"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"time"
 )
 
-func SolveExpression(s store.Interface) gin.HandlerFunc {
+func SolveExpression(s server.Interface) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		jsonBody := struct {
 			Expression string `json:"expression" form:"expression" binding:"required"`
@@ -43,13 +43,13 @@ func SolveExpression(s store.Interface) gin.HandlerFunc {
 
 		ctx.JSON(http.StatusOK, gin.H{"result": result})
 
-		err = s.History().Create(&models.History{
+		err = s.Store().History().Create(&models.History{
 			EventTime:  time.Now(),
 			Expression: jsonBody.Expression,
 			Result:     result,
 		})
 		if err != nil {
-			log.Printf("History creation error: %v\n", err)
+			s.Logger().Errorf("History creation error: %v", err)
 		}
 	}
 }

@@ -8,12 +8,12 @@ import (
 )
 
 func main() {
-	cfg := new(server.Config)
+	cfg := new(calcapp.Config)
 	if err := env.Parse(cfg); err != nil {
 		log.Fatal(err)
 	}
 
-	srv, err := calcserv.NewServer(cfg)
+	srv, err := calcserv.New(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
