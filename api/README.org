@@ -1,0 +1,31 @@
+#+TITLE: Описание API калькулятора
+
+* Решить уравнение
+Решение математического уравнения
+
+** URL
+~/api/solve_expression~
+
+** Метод
+~POST~
+** Data params
+Обязательно:
+#+begin_src json
+{
+	"expression": [String]
+}
+#+end_src
+** Успешный ответ
+- *CODE*: 200
+  *CONTENT*: ~{"result": [Number]}~
+** Неудачный ответ
+- *CODE*: 200
+  *CONTENT*:
+  #+begin_src json
+    {
+        "error": {
+            "code": 400,
+            "message": "expression parsing error: unexpected token 0"
+        }
+    }
+  #+end_src
