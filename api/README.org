@@ -17,15 +17,29 @@
 #+end_src
 ** Успешный ответ
 - *CODE*: 200
-  *CONTENT*: ~{"result": [Number]}~
+- *CONTENT*: ~{"result": [Number]}~
 ** Неудачный ответ
-- *CODE*: 200
-  *CONTENT*:
+- *CODE*: 400
+- *CONTENT*:
   #+begin_src json
     {
         "error": {
             "code": 400,
-            "message": "expression parsing error: unexpected token 0"
+            "message": "%ERROR%"
         }
     }
   #+end_src
+
+
+ИЛИ
+
+
+- *CODE*: 500
+- *CONTENT*: Internal Server Error
+** Пример вызова
+JSON Body
+#+begin_src json
+{
+	"expression": "2 * ((2 + 5) + ((3 * 8) * (2 + 5))"
+}
+#+end_src
