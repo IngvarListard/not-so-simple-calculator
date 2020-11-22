@@ -1,5 +1,4 @@
 #+TITLE: Описание API калькулятора
-
 ** Решить уравнение
 Решение математического уравнения
 
@@ -42,4 +41,150 @@ JSON Body
 {
 	"expression": "2 * ((2 + 5) + ((3 * 8) * (2 + 5))"
 }
+#+end_src
+** Получение всей истории вызовов
+Получение истории всех успешных вызовов калькулятора
+
+*** URL
+~/api/get_all_history~
+
+*** Метод
+~GET~
+*** Параметры
+Нет
+*** Успешный ответ
+- *CODE*: 200
+- *CONTENT*:
+  #+begin_src json
+    [
+        {
+            "id": [Number],
+            "event_time": [String],
+            "expression": [String],
+            "result": [String]
+        }
+    ]
+  #+end_src
+*** Неудачный ответ
+- *CODE*: 400
+- *CONTENT*:
+  #+begin_src json
+    {
+        "error": {
+            "code": 400,
+            "message": "%ERROR%"
+        }
+    }
+  #+end_src
+
+
+ИЛИ
+
+
+- *CODE*: 500
+- *CONTENT*: Internal Server Error
+*** Пример успешного результата
+
+#+begin_src json
+[
+    {
+        "id": 1,
+        "event_time": "2020-11-21T22:23:27+03:00",
+        "expression": "(((((1))))) + 4",
+        "result": "5"
+    },
+    {
+        "id": 2,
+        "event_time": "2020-11-21T22:23:29+03:00",
+        "expression": "(((((1))))) + 4",
+        "result": "5"
+    },
+    {
+        "id": 3,
+        "event_time": "2020-11-21T22:49:30+03:00",
+        "expression": "(((((1))))) + 4",
+        "result": "5"
+    }
+]
+#+end_src
+
+** Получение истории вызовов за время
+Получение истории вызовов за промежуток времени
+
+*** URL
+~/api/get_history_by_time_range~
+
+*** Метод
+~POST~
+*** Data params
+Обязательны оба поля
+#+begin_src json
+{
+	"start_time": [String],
+	"end_time": [String]
+}
+#+end_src
+Дата в формате RFC3339. Пример: ~"2020-11-21T22:50:27+03:00"~
+*** Успешный ответ
+- *CODE*: 200
+- *CONTENT*:
+  #+begin_src json
+    [
+        {
+            "id": [Number],
+            "event_time": [String],
+            "expression": [String],
+            "result": [String]
+        }
+    ]
+  #+end_src
+*** Неудачный ответ
+- *CODE*: 400
+- *CONTENT*:
+  #+begin_src json
+    {
+        "error": {
+            "code": 400,
+            "message": "%ERROR%"
+        }
+    }
+  #+end_src
+
+
+ИЛИ
+
+
+- *CODE*: 500
+- *CONTENT*: Internal Server Error
+*** Пример запроса
+Пример JSON Body POST запроса
+#+begin_src json
+{
+	"start_time": "2020-11-21T21:23:27+03:00",
+	"end_time": "2020-11-21T22:50:27+03:00"
+}
+#+end_src
+
+Пример успешного результата
+#+begin_src json
+[
+    {
+        "id": 1,
+        "event_time": "2020-11-21T22:23:27+03:00",
+        "expression": "(((((1))))) + 4",
+        "result": "5"
+    },
+    {
+        "id": 2,
+        "event_time": "2020-11-21T22:23:29+03:00",
+        "expression": "(((((1))))) + 4",
+        "result": "5"
+    },
+    {
+        "id": 3,
+        "event_time": "2020-11-21T22:49:30+03:00",
+        "expression": "(((((1))))) + 4",
+        "result": "5"
+    }
+]
 #+end_src
