@@ -34,7 +34,9 @@ API построен на основе библиотеки ~Gin~. В качес
 1. Создать директорию на хосте ~ ~/db~, либо в файле [[https://github.com/IngvarListard/not-so-simple-calculator/blob/master/deploy/docker-compose.yml#L13][docker-compose.yml]] изменить строку ~source: ~/db~ на желаемую;
 2. Запустить ~docker-compose -f deploy/docker-compose.yml up --build~
 
-В директории ~~/db~ будет храниться база данных ~SQLite~ в которую будет записываться история операций
+В директории ~~/db~ будет храниться база данных ~SQLite~ в которую будет записываться история операций.
+
+По умолчанию в докере сервер запускается на 3000 порту.
 
 [[https://github.com/IngvarListard/not-so-simple-calculator/tree/master/api][Документация к методам API]]
 ** Переменные окружения
